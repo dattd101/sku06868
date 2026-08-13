@@ -23,7 +23,7 @@ export default async function HomePage() {
     getLotteryResults("xsmn", 20),
     getVietlottResults("mega645", 10),
     getVietlottResults("power655", 10),
-    getKenoResults(20),
+    getKenoResults(10),
   ]);
   const empty = xsmb.length + xsmn.length + mega.length + power.length + keno.length === 0;
 
