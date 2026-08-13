@@ -30,7 +30,7 @@ export async function crawlXsmb(): Promise<LotteryResult[]> {
   const getNumbers = (selector: string) => box.find(selector).first().children("div")
     .map((_, element) => $(element).text().trim()).get().filter(Boolean).join(", ");
 
-  return [{
+  const result: LotteryResult = {
     ngay_quay: getDrawDate($),
     tinh: box.find("td.tentinh span.phathanh a").first().text().trim() || "Miền Bắc",
     giai_db: getNumbers("td.giai_dac_biet"),
@@ -41,7 +41,16 @@ export async function crawlXsmb(): Promise<LotteryResult[]> {
     giai_nam: getNumbers("td.giai_nam"),
     giai_sau: getNumbers("td.giai_sau"),
     giai_bay: getNumbers("td.giai_bay"),
-  }];
+  };
+  const expectedCounts: Array<[keyof LotteryResult, number]> = [
+    ["giai_db", 1], ["giai_nhat", 1], ["giai_nhi", 2], ["giai_ba", 6],
+    ["giai_tu", 4], ["giai_nam", 6], ["giai_sau", 3], ["giai_bay", 4],
+  ];
+  const complete = expectedCounts.every(([field, count]) =>
+    String(result[field] ?? "").split(",").filter((value) => value.trim()).length === count,
+  );
+  if (!complete) throw new Error("Kết quả XSMB chưa đầy đủ, sẽ thử lại theo lịch");
+  return [result];
 }
 
 export async function crawlXsmn(): Promise<LotteryResult[]> {
@@ -71,6 +80,14 @@ export async function crawlXsmn(): Promise<LotteryResult[]> {
       results[index][field] = value;
     });
   });
+  const expectedCounts: Array<[keyof LotteryResult, number]> = [
+    ["giai_db", 1], ["giai_nhat", 1], ["giai_nhi", 1], ["giai_ba", 2],
+    ["giai_tu", 7], ["giai_nam", 1], ["giai_sau", 3], ["giai_bay", 1], ["giai_tam", 1],
+  ];
+  const complete = results.every((result) => expectedCounts.every(([field, count]) =>
+    String(result[field] ?? "").split(",").filter((value) => value.trim()).length === count,
+  ));
+  if (!complete) throw new Error("Kết quả XSMN chưa đầy đủ, sẽ thử lại theo lịch");
   return results;
 }
 

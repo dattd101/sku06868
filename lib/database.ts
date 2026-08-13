@@ -83,6 +83,8 @@ export async function saveLottery(table: "xsmb" | "xsmn", rows: LotteryResult[])
     : "giai_db, giai_nhat, giai_nhi, giai_ba, giai_tu, giai_nam, giai_sau, giai_bay, created_vn";
   const placeholders = columns.split(", ").map(() => "?").join(", ");
   const updates = updateColumns.split(", ").map((column) => `${column} = excluded.${column}`).join(", ");
+  const resultColumns = updateColumns.split(", ").filter((column) => column !== "created_vn");
+  const changedCondition = resultColumns.map((column) => `${table}.${column} IS NOT excluded.${column}`).join(" OR ");
 
   const statements = rows.map((row): InStatement => {
     const args = [row.ngay_quay, row.tinh, row.giai_db, row.giai_nhat, row.giai_nhi,
@@ -90,7 +92,7 @@ export async function saveLottery(table: "xsmb" | "xsmn", rows: LotteryResult[])
     if (hasEighthPrize) args.push(row.giai_tam ?? "");
     args.push(nowInVietnam());
     return {
-      sql: `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) ON CONFLICT(ngay_quay, tinh) DO UPDATE SET ${updates}`,
+      sql: `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) ON CONFLICT(ngay_quay, tinh) DO UPDATE SET ${updates} WHERE ${changedCondition}`,
       args,
     };
   });
