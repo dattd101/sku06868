@@ -3,13 +3,11 @@ import { apiJson, apiOptions, apiSources, getPublicResults, readPagination } fro
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export function GET(request: Request) {
+export async function GET(request: Request) {
   try {
     const { limit, offset } = readPagination(request);
-    const data = Object.fromEntries(apiSources.map((source) => [
-      source,
-      getPublicResults(source, limit, offset),
-    ]));
+    const results = await Promise.all(apiSources.map((source) => getPublicResults(source, limit, offset)));
+    const data = Object.fromEntries(apiSources.map((source, index) => [source, results[index]]));
 
     return apiJson({
       success: true,

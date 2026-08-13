@@ -41,7 +41,7 @@ function createStore(): SchedulerStore {
 
 const store = globalScheduler.__lotteryScheduler ??= createStore();
 
-function saveResult(job: CrawlJob, result: Awaited<ReturnType<typeof crawl>>) {
+async function saveResult(job: CrawlJob, result: Awaited<ReturnType<typeof crawl>>) {
   if (job === "xsmb" || job === "xsmn") return saveLottery(job, result as LotteryResult[]);
   if (job === "keno") return saveKeno(result as KenoResult[]);
   return saveVietlott(job, result as VietlottResult);
@@ -58,6 +58,7 @@ function retryTime(job: CrawlJob, now: Date) {
 function setNextTimer(job: CrawlJob, target: Date) {
   const status = store.statuses[job];
   status.nextRun = target.toISOString();
+  if (process.env.VERCEL) return;
   if (store.timers[job]) clearTimeout(store.timers[job]);
   const delay = Math.max(250, target.getTime() - Date.now());
   store.timers[job] = setTimeout(() => void executeJob(job), delay);
@@ -71,7 +72,7 @@ async function executeJob(job: CrawlJob) {
 
   try {
     const result = await crawl(job);
-    const changed = saveResult(job, result);
+    const changed = await saveResult(job, result);
     const now = new Date();
     status.lastSuccess = true;
     status.lastMessage = changed > 0
@@ -93,7 +94,7 @@ async function executeJob(job: CrawlJob) {
 }
 
 export function startScheduler() {
-  if (store.started || process.env.NEXT_PHASE === "phase-production-build") return;
+  if (store.started || process.env.NEXT_PHASE === "phase-production-build" || process.env.VERCEL) return;
   store.started = true;
   const now = new Date();
 
@@ -104,6 +105,11 @@ export function startScheduler() {
       : getNextScheduledRun(job, now));
   });
   console.log("[scheduler] Đã khởi động 5 crawler tự động");
+}
+
+export async function runScheduledJob(job: CrawlJob) {
+  await executeJob(job);
+  return { ...store.statuses[job] };
 }
 
 export function getSchedulerStatuses() {

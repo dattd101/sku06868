@@ -35,9 +35,10 @@ function splitNumbers(value: string) {
   return value.split(",").map((number) => number.trim()).filter(Boolean);
 }
 
-export function getPublicResults(source: ApiSource, limit: number, offset: number) {
+export async function getPublicResults(source: ApiSource, limit: number, offset: number) {
   if (source === "xsmb" || source === "xsmn") {
-    return getLotteryResults(source, limit, offset).map((row) => ({
+    const rows = await getLotteryResults(source, limit, offset);
+    return rows.map((row) => ({
       ...row,
       giai_db: splitNumbers(row.giai_db),
       giai_nhat: splitNumbers(row.giai_nhat),
@@ -52,10 +53,12 @@ export function getPublicResults(source: ApiSource, limit: number, offset: numbe
   }
 
   if (source === "keno") {
-    return getKenoResults(limit, offset).map((row) => ({ ...row, numbers: splitNumbers(row.numbers) }));
+    const rows = await getKenoResults(limit, offset);
+    return rows.map((row) => ({ ...row, numbers: splitNumbers(row.numbers) }));
   }
 
-  return getVietlottResults(source, limit, offset).map((row) => ({
+  const rows = await getVietlottResults(source, limit, offset);
+  return rows.map((row) => ({
     ...row,
     so_trung: splitNumbers(row.so_trung),
   }));

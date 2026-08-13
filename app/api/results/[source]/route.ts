@@ -15,7 +15,7 @@ export async function GET(request: Request, context: { params: Promise<{ source:
 
   try {
     const { limit, offset } = readPagination(request);
-    const data = getPublicResults(source as ApiSource, limit, offset);
+    const data = await getPublicResults(source as ApiSource, limit, offset);
     return apiJson({
       success: true,
       source,

@@ -17,7 +17,27 @@ Chế độ development dùng cache `.next-dev`, còn production build dùng `.n
 
 Mở `http://localhost:3000/admin` để theo dõi trạng thái và thời gian crawl tiếp theo. File `databases.db` được tự tạo tại thư mục gốc dự án; crawler tự chạy lần đầu khi server khởi động.
 
-Scheduler chạy cùng tiến trình Next.js và tự khởi động lại khi server khởi động. Vì vậy cần chạy ứng dụng bằng một tiến trình Node.js lâu dài (VPS, PM2 hoặc Docker), không phù hợp với serverless có thể tắt tiến trình sau request.
+Khi chạy local/VPS, scheduler chạy cùng tiến trình Next.js. Khi chạy trên Vercel, GitHub Actions tại `.github/workflows/crawler.yml` gọi các API cron theo lịch vì Vercel Functions không giữ vòng lặp nền.
+
+## Triển khai Vercel
+
+1. Tạo database Turso/libSQL và thêm vào Vercel Environment Variables:
+
+```text
+TURSO_DATABASE_URL=libsql://...
+TURSO_AUTH_TOKEN=...
+CRON_SECRET=mot-chuoi-bi-mat
+```
+
+2. Trong GitHub repository, tạo Actions variable:
+
+```text
+VERCEL_APP_URL=https://ten-du-an.vercel.app
+```
+
+3. Tạo GitHub Actions secret `CRON_SECRET` với cùng giá trị đã đặt trên Vercel.
+
+Nếu chưa có biến Turso, ứng dụng trên Vercel vẫn mở bằng database `/tmp`, nhưng dữ liệu có thể mất sau mỗi lần Function được tạo lại. Không dùng chế độ `/tmp` cho production.
 
 ## REST API
 

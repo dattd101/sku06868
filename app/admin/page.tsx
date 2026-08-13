@@ -1,3 +1,4 @@
+import { getDatabaseMode } from "@/lib/database";
 import { getSchedulerStatuses } from "@/lib/scheduler";
 import CountdownButton from "./countdown-button";
 
@@ -22,6 +23,7 @@ function formatVietnamTime(value: string | null) {
 
 export default function AdminPage() {
   const statuses = getSchedulerStatuses();
+  const databaseMode = getDatabaseMode();
   return (
     <section>
       <div className="page-heading">
@@ -29,6 +31,11 @@ export default function AdminPage() {
         <h1>Quản trị crawler</h1>
         <p>Crawler tự động chạy nền theo lịch và lưu kết quả vào <code>databases.db</code>.</p>
       </div>
+
+      {!databaseMode.persistent && (
+        <p className="alert error">Database hiện đang dùng bộ nhớ tạm của Vercel. Hãy cấu hình TURSO_DATABASE_URL và TURSO_AUTH_TOKEN để dữ liệu không bị mất.</p>
+      )}
+      <p className="database-mode">Database: {databaseMode.label}</p>
 
       <div className="admin-grid">
         {jobs.map((job) => {

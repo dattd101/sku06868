@@ -12,17 +12,19 @@ function splitNumbers(value: string) {
   return value ? value.split(",").map((number) => number.trim()).filter(Boolean) : [];
 }
 
-export default function HomePage() {
+export default async function HomePage() {
   const currentDateTime = new Intl.DateTimeFormat("vi-VN", {
     timeZone: "Asia/Ho_Chi_Minh",
     dateStyle: "full",
     timeStyle: "medium",
   }).format(new Date());
-  const xsmb = getLotteryResults("xsmb", 10);
-  const xsmn = getLotteryResults("xsmn", 20);
-  const mega = getVietlottResults("mega645", 10);
-  const power = getVietlottResults("power655", 10);
-  const keno = getKenoResults(20);
+  const [xsmb, xsmn, mega, power, keno] = await Promise.all([
+    getLotteryResults("xsmb", 10),
+    getLotteryResults("xsmn", 20),
+    getVietlottResults("mega645", 10),
+    getVietlottResults("power655", 10),
+    getKenoResults(20),
+  ]);
   const empty = xsmb.length + xsmn.length + mega.length + power.length + keno.length === 0;
 
   return (
