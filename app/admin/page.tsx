@@ -5,10 +5,10 @@ import CountdownButton from "./countdown-button";
 export const dynamic = "force-dynamic";
 
 const jobs = [
-  { value: "xsmb", title: "Xổ số miền Bắc", note: "GitHub Actions · 19:00 hằng ngày" },
-  { value: "xsmn", title: "Xổ số miền Nam", note: "GitHub Actions · 16:15 hằng ngày" },
-  { value: "mega645", title: "Mega 6/45", note: "GitHub Actions · 18:00 thứ 4, thứ 6, Chủ nhật" },
-  { value: "power655", title: "Power 6/55", note: "GitHub Actions · 18:00 thứ 3, thứ 5, thứ 7" },
+  { value: "xsmb", title: "Xổ số miền Bắc", note: "19:00 hằng ngày" },
+  { value: "xsmn", title: "Xổ số miền Nam", note: "16:15 hằng ngày" },
+  { value: "mega645", title: "Mega 6/45", note: "18:00 thứ 4, thứ 6, Chủ nhật" },
+  { value: "power655", title: "Power 6/55", note: "18:00 thứ 3, thứ 5, thứ 7" },
   { value: "keno", title: "Keno", note: "Mỗi 6 phút trong khung 06:00–22:10" },
 ] as const;
 
@@ -17,8 +17,13 @@ function formatVietnamTime(value: string | null) {
   const normalized = value.includes("T") ? value : `${value.replace(" ", "T")}+07:00`;
   return new Intl.DateTimeFormat("vi-VN", {
     timeZone: "Asia/Ho_Chi_Minh",
-    dateStyle: "short",
-    timeStyle: "medium",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
   }).format(new Date(normalized));
 }
 
@@ -52,7 +57,6 @@ export default async function AdminPage() {
               <CountdownButton nextRun={nextRun} running={false} />
               <div className="job-status">
                 <span>Dữ liệu cập nhật gần nhất: {formatVietnamTime(status.lastUpdate)}</span>
-                <span>Đang có {status.total} bản ghi trong SQLite</span>
               </div>
             </article>
           );
