@@ -26,7 +26,10 @@ export default async function AdminPage() {
   const stats = await getCrawlerDatabaseStats();
   const currentDateTime = new Intl.DateTimeFormat("vi-VN", {
     timeZone: "Asia/Ho_Chi_Minh",
-    dateStyle: "full",
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
