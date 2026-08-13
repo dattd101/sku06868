@@ -1,5 +1,3 @@
-import "server-only";
-
 import { crawl } from "./crawlers";
 import { saveKeno, saveLottery, saveVietlott } from "./database";
 import { getNextScheduledRun, isKenoActive, isVietlottDrawWindow } from "./schedule";

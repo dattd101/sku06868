@@ -1,17 +1,12 @@
-import "server-only";
-
 import { createClient, type InStatement } from "@libsql/client";
 import path from "node:path";
 import type { KenoResult, LotteryResult, VietlottResult } from "./types";
 
 const isVercel = Boolean(process.env.VERCEL);
-const remoteUrl = process.env.TURSO_DATABASE_URL;
-const databaseUrl = remoteUrl
-  ?? (isVercel ? "file:/tmp/databases.db" : `file:${path.join(process.cwd(), "databases.db")}`);
+const databasePath = path.join(process.cwd(), "databases.db");
 
 const db = createClient({
-  url: databaseUrl,
-  authToken: remoteUrl ? process.env.TURSO_AUTH_TOKEN : undefined,
+  url: `file:${databasePath}`,
 });
 
 const schema: InStatement[] = [
@@ -45,8 +40,15 @@ const schema: InStatement[] = [
 
 let initialization: Promise<unknown> | undefined;
 function initDatabase() {
-  initialization ??= db.batch(schema, "write");
+  // File trong Vercel deployment là snapshot chỉ đọc và đã có schema từ GitHub.
+  initialization ??= isVercel ? Promise.resolve() : db.batch(schema, "write");
   return initialization;
+}
+
+function assertWritable() {
+  if (isVercel) {
+    throw new Error("Vercel chỉ đọc databases.db. Crawler phải chạy bằng GitHub Actions.");
+  }
 }
 
 function nowInVietnam() {
@@ -57,14 +59,20 @@ function nowInVietnam() {
 }
 
 export function getDatabaseMode() {
-  return remoteUrl
-    ? { persistent: true, label: "Turso cloud (dữ liệu lâu dài)" }
-    : isVercel
-      ? { persistent: false, label: "Vercel /tmp (dữ liệu tạm thời)" }
-      : { persistent: true, label: "SQLite databases.db cục bộ" };
+  return isVercel
+    ? { persistent: true, label: "SQLite databases.db từ GitHub (chỉ đọc)" }
+    : { persistent: true, label: "SQLite databases.db cục bộ" };
+}
+
+export async function checkpointDatabase() {
+  if (isVercel) return;
+  await db.execute("PRAGMA wal_checkpoint(TRUNCATE)");
+  // Snapshot GitHub phải tự chứa toàn bộ dữ liệu và đọc được trên filesystem read-only của Vercel.
+  await db.execute("PRAGMA journal_mode = DELETE");
 }
 
 export async function saveLottery(table: "xsmb" | "xsmn", rows: LotteryResult[]) {
+  assertWritable();
   await initDatabase();
   const hasEighthPrize = table === "xsmn";
   const columns = hasEighthPrize
@@ -91,6 +99,7 @@ export async function saveLottery(table: "xsmb" | "xsmn", rows: LotteryResult[])
 }
 
 export async function saveVietlott(table: "mega645" | "power655", row: VietlottResult) {
+  assertWritable();
   await initDatabase();
   const result = await db.execute({
     sql: `INSERT OR IGNORE INTO ${table} (thoi_gian, so_ky_quay, so_trung, created_vn) VALUES (?, ?, ?, ?)`,
@@ -112,6 +121,7 @@ export async function getVietlottResults(table: "mega645" | "power655", limit = 
 }
 
 export async function saveKeno(rows: KenoResult[]) {
+  assertWritable();
   await initDatabase();
   const statements = rows.map((row): InStatement => ({
     sql: `INSERT OR IGNORE INTO keno (draw_date, draw_time, draw_no, numbers, so_chan, so_le, so_lon, so_nho, created_vn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,

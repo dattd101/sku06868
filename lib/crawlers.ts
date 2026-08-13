@@ -1,5 +1,3 @@
-import "server-only";
-
 import { load, type CheerioAPI } from "cheerio";
 import type { CrawlJob, KenoResult, LotteryResult, VietlottResult } from "./types";
 

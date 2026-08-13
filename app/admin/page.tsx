@@ -32,9 +32,6 @@ export default function AdminPage() {
         <p>Crawler tự động chạy nền theo lịch và lưu kết quả vào <code>databases.db</code>.</p>
       </div>
 
-      {!databaseMode.persistent && (
-        <p className="alert error">Database hiện đang dùng bộ nhớ tạm của Vercel. Hãy cấu hình TURSO_DATABASE_URL và TURSO_AUTH_TOKEN để dữ liệu không bị mất.</p>
-      )}
       <p className="database-mode">Database: {databaseMode.label}</p>
 
       <div className="admin-grid">
