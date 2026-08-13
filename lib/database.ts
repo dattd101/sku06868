@@ -143,3 +143,17 @@ export async function getKenoResults(limit = 30, offset = 0) {
     so_chan: number; so_le: number; so_lon: number; so_nho: number; created_vn: string;
   }>;
 }
+
+export async function getCrawlerDatabaseStats() {
+  await initDatabase();
+  const sources = ["xsmb", "xsmn", "mega645", "power655", "keno"] as const;
+  const results = await Promise.all(sources.map(async (source) => {
+    const result = await db.execute(`SELECT COUNT(*) AS total, MAX(created_vn) AS last_update FROM ${source}`);
+    const row = result.rows[0];
+    return [source, {
+      total: Number(row?.total ?? 0),
+      lastUpdate: row?.last_update ? String(row.last_update) : null,
+    }] as const;
+  }));
+  return Object.fromEntries(results) as Record<(typeof sources)[number], { total: number; lastUpdate: string | null }>;
+}

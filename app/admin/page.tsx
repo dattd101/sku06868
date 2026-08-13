@@ -1,56 +1,60 @@
-import { getDatabaseMode } from "@/lib/database";
-import { getSchedulerStatuses } from "@/lib/scheduler";
+import { getCrawlerDatabaseStats } from "@/lib/database";
+import { getNextScheduledRun } from "@/lib/schedule";
 import CountdownButton from "./countdown-button";
 
 export const dynamic = "force-dynamic";
 
 const jobs = [
-  { value: "xsmb", title: "Xổ số miền Bắc", note: "19:00 hằng ngày · lỗi retry sau 30 phút" },
-  { value: "xsmn", title: "Xổ số miền Nam", note: "16:15 hằng ngày · lỗi retry sau 15 phút" },
-  { value: "mega645", title: "Mega 6/45", note: "18:00 thứ 4, thứ 6, Chủ nhật · retry 5 phút" },
-  { value: "power655", title: "Power 6/55", note: "18:00 thứ 3, thứ 5, thứ 7 · retry 5 phút" },
+  { value: "xsmb", title: "Xổ số miền Bắc", note: "GitHub Actions · 19:00 hằng ngày" },
+  { value: "xsmn", title: "Xổ số miền Nam", note: "GitHub Actions · 16:15 hằng ngày" },
+  { value: "mega645", title: "Mega 6/45", note: "GitHub Actions · 18:00 thứ 4, thứ 6, Chủ nhật" },
+  { value: "power655", title: "Power 6/55", note: "GitHub Actions · 18:00 thứ 3, thứ 5, thứ 7" },
   { value: "keno", title: "Keno", note: "Mỗi 6 phút trong khung 06:00–22:10" },
 ] as const;
 
 function formatVietnamTime(value: string | null) {
-  if (!value) return "Chưa chạy";
+  if (!value) return "Chưa có dữ liệu";
+  const normalized = value.includes("T") ? value : `${value.replace(" ", "T")}+07:00`;
   return new Intl.DateTimeFormat("vi-VN", {
     timeZone: "Asia/Ho_Chi_Minh",
     dateStyle: "short",
     timeStyle: "medium",
-  }).format(new Date(value));
+  }).format(new Date(normalized));
 }
 
-export default function AdminPage() {
-  const statuses = getSchedulerStatuses();
-  const databaseMode = getDatabaseMode();
+export default async function AdminPage() {
+  const stats = await getCrawlerDatabaseStats();
+  const currentDateTime = new Intl.DateTimeFormat("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    dateStyle: "full",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date());
   return (
     <section>
       <div className="page-heading">
-        <p className="eyebrow">BACKEND</p>
         <h1>Quản trị crawler</h1>
-        <p>Crawler tự động chạy nền theo lịch và lưu kết quả vào <code>databases.db</code>.</p>
+        <p>{currentDateTime}</p>
       </div>
-
-      <p className="database-mode">Database: {databaseMode.label}</p>
 
       <div className="admin-grid">
         {jobs.map((job) => {
-          const status = statuses.find((item) => item.job === job.value)!;
+          const status = stats[job.value];
+          const nextRun = getNextScheduledRun(job.value).toISOString();
           return (
             <article className="admin-card" key={job.value}>
-              <div className="admin-title"><h2>{job.title}</h2><span className={status.lastSuccess === false ? "status-dot error-dot" : "status-dot"} /></div>
+              <div className="admin-title"><h2>{job.title}</h2><span className={status.total > 0 ? "status-dot" : "status-dot waiting-dot"} /></div>
               <p>{job.note}</p>
-              <CountdownButton nextRun={status.nextRun} running={status.running} />
+              <CountdownButton nextRun={nextRun} running={false} />
               <div className="job-status">
-                <span>Lần chạy gần nhất: {formatVietnamTime(status.lastRun)}</span>
-                <span>{status.lastMessage}</span>
+                <span>Dữ liệu cập nhật gần nhất: {formatVietnamTime(status.lastUpdate)}</span>
+                <span>Đang có {status.total} bản ghi trong SQLite</span>
               </div>
             </article>
           );
         })}
       </div>
-      <p className="hint">Scheduler hoạt động khi tiến trình Next.js đang chạy. Khởi động lại server sẽ tự crawl dữ liệu hiện tại và thiết lập lại lịch.</p>
     </section>
   );
 }
