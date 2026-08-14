@@ -27,6 +27,15 @@ button:hover { background: #cf3c55; }
 .database-mode { margin: -10px 0 24px; color: var(--muted); font-size: 13px; }
 .section-block { margin-top: 42px; }
 .section-block > h2 { font-size: 25px; margin-bottom: 16px; }
+.results-tabs { margin-top: 36px; }
+.tab-menu { display: flex; gap: 8px; padding: 7px; overflow-x: auto; background: white; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 7px 24px rgba(20, 30, 45, .04); }
+.tab-button { flex: 1 0 max-content; min-width: 145px; padding: 12px 16px; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 9px; font-weight: 700; white-space: nowrap; }
+.tab-button:hover { color: #a52e43; background: #fff7f8; }
+.tab-button.active { color: #a52e43; background: var(--brand-soft); border-color: #f8dce2; }
+.tab-panel { margin-top: 20px; }
+.tab-result-list { max-width: 760px; margin: 0 auto; }
+.tab-result-list .vietlott-row:first-child { border-top: 0; }
+.tab-empty { margin-top: 0; }
 .vietlott-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
 .result-list, .lottery-card { overflow: hidden; background: white; border: 1px solid var(--line); border-radius: 14px; }
 .result-list > h3 { margin: 0; padding: 17px 20px; color: #3473a8; background: var(--blue-soft); border-bottom: 1px solid #dcecf8; }
@@ -56,4 +65,5 @@ code { padding: 2px 6px; border-radius: 5px; background: #e9ebef; }
   .container { padding-top: 32px; } .admin-grid, .vietlott-grid, .lottery-grid { grid-template-columns: 1fr; }
   .vietlott-row { align-items: flex-start; flex-direction: column; } .balls { justify-content: flex-start; }
   .keno-row { grid-template-columns: 1fr; } .keno-balls { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; } .keno-balls span { width: 100%; max-width: 34px; aspect-ratio: 1; height: auto; }
+  .tab-menu { margin-inline: -4px; } .tab-button { min-width: 132px; }
 }
