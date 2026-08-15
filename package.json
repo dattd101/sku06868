@@ -10,8 +10,8 @@
     "crawl": "tsx scripts/crawl.ts"
   },
   "dependencies": {
-    "@libsql/client": "^0.17.4",
     "cheerio": "^1.1.0",
+    "fast-xml-parser": "^5.10.1",
     "next": "^15.5.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

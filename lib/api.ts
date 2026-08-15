@@ -1,7 +1,7 @@
 import "server-only";
 
 import { NextResponse } from "next/server";
-import { getKenoResults, getLotteryResults, getVietlottResults } from "./database";
+import { getXmlKenoResults, getXmlLotteryResults, getXmlVietlottResults } from "./xml-store";
 
 export const apiSources = ["xsmb", "xsmn", "mega645", "power655", "keno"] as const;
 export type ApiSource = (typeof apiSources)[number];
@@ -37,7 +37,7 @@ function splitNumbers(value: string) {
 
 export async function getPublicResults(source: ApiSource, limit: number, offset: number) {
   if (source === "xsmb" || source === "xsmn") {
-    const rows = await getLotteryResults(source, limit, offset);
+    const rows = await getXmlLotteryResults(source, limit, offset);
     return rows.map((row) => ({
       ...row,
       giai_db: splitNumbers(row.giai_db),
@@ -53,11 +53,11 @@ export async function getPublicResults(source: ApiSource, limit: number, offset:
   }
 
   if (source === "keno") {
-    const rows = await getKenoResults(limit, offset);
+    const rows = await getXmlKenoResults(limit, offset);
     return rows.map((row) => ({ ...row, numbers: splitNumbers(row.numbers) }));
   }
 
-  const rows = await getVietlottResults(source, limit, offset);
+  const rows = await getXmlVietlottResults(source, limit, offset);
   return rows.map((row) => ({
     ...row,
     so_trung: splitNumbers(row.so_trung),

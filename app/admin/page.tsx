@@ -1,4 +1,4 @@
-import { getCrawlerDatabaseStats } from "@/lib/database";
+import { getXmlCrawlerStats } from "@/lib/xml-store";
 import { getNextScheduledRun } from "@/lib/schedule";
 import CountdownButton from "./countdown-button";
 
@@ -28,7 +28,7 @@ function formatVietnamTime(value: string | null) {
 }
 
 export default async function AdminPage() {
-  const stats = await getCrawlerDatabaseStats();
+  const stats = await getXmlCrawlerStats();
   const currentDateTime = new Intl.DateTimeFormat("vi-VN", {
     timeZone: "Asia/Ho_Chi_Minh",
     weekday: "long",

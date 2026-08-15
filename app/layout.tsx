@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Kết quả xổ số",
-  description: "Next.js 15 crawler lưu dữ liệu bằng SQLite",
+  description: "Next.js 15 crawler lưu dữ liệu XML trên GitHub",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

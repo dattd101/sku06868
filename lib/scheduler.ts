@@ -1,5 +1,5 @@
 import { crawl } from "./crawlers";
-import { saveKeno, saveLottery, saveVietlott } from "./database";
+import { saveCrawlToXml } from "./xml-store";
 import { getNextScheduledRun, isKenoActive, isVietlottDrawWindow } from "./schedule";
 import type { CrawlJob, KenoResult, LotteryResult, VietlottResult } from "./types";
 
@@ -40,9 +40,7 @@ function createStore(): SchedulerStore {
 const store = globalScheduler.__lotteryScheduler ??= createStore();
 
 async function saveResult(job: CrawlJob, result: Awaited<ReturnType<typeof crawl>>) {
-  if (job === "xsmb" || job === "xsmn") return saveLottery(job, result as LotteryResult[]);
-  if (job === "keno") return saveKeno(result as KenoResult[]);
-  return saveVietlott(job, result as VietlottResult);
+  return saveCrawlToXml(job, result as LotteryResult[] | VietlottResult | KenoResult[]);
 }
 
 function retryTime(job: CrawlJob, now: Date) {

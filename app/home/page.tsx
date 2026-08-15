@@ -1,4 +1,4 @@
-import { getKenoResults, getLotteryResults, getVietlottResults } from "@/lib/database";
+import { getXmlKenoResults, getXmlLotteryResults, getXmlVietlottResults } from "@/lib/xml-store";
 import ResultsTabs from "./results-tabs";
 
 export const dynamic = "force-dynamic";
@@ -10,11 +10,11 @@ export default async function HomePage() {
     timeStyle: "medium",
   }).format(new Date());
   const [xsmb, xsmn, mega645, power655, keno] = await Promise.all([
-    getLotteryResults("xsmb", 10),
-    getLotteryResults("xsmn", 10),
-    getVietlottResults("mega645", 10),
-    getVietlottResults("power655", 10),
-    getKenoResults(10),
+    getXmlLotteryResults("xsmb", 10),
+    getXmlLotteryResults("xsmn", 10),
+    getXmlVietlottResults("mega645", 10),
+    getXmlVietlottResults("power655", 10),
+    getXmlKenoResults(10),
   ]);
 
   return (

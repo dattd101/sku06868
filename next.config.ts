@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   // tới chunk đã bị lệnh còn lại thay thế (Cannot find module './xxx.js').
   distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
   outputFileTracingIncludes: {
-    "/**": ["./databases.db"],
+    "/**": ["./data/results.xml"],
   },
 };
 

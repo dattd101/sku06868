@@ -1,11 +1,12 @@
-# Next.js 15 crawler + SQLite trên GitHub
+# Next.js 15 crawler + XML trên GitHub
 
 Ứng dụng crawl XSMB, XSMN, Mega 6/45, Power 6/55 và Keno.
 
-- `/home`: hiển thị dữ liệu xổ số.
-- `/admin`: theo dõi lịch crawler.
+- `/home`: hiển thị dữ liệu từ `data/results.xml`.
+- `/admin`: theo dõi lịch và thời gian dữ liệu được cập nhật.
 - `/api`: REST API public, chỉ đọc.
-- `databases.db`: SQLite được lưu trực tiếp trong GitHub repository.
+- GitHub lưu dữ liệu trong file `data/results.xml`.
+- Vercel chỉ đọc XML để render giao diện và API.
 
 ## Chạy local
 
@@ -14,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Chạy crawler thủ công từ terminal:
+Chạy crawler thủ công:
 
 ```bash
 npm run crawl -- xsmb
@@ -26,25 +27,26 @@ npm run crawl -- keno
 
 ## GitHub Actions và Vercel
 
-Workflow `.github/workflows/crawler.yml` thực hiện:
+Workflow `.github/workflows/crawler.yml` sẽ:
 
-1. Checkout repository.
-2. Chạy crawler theo lịch.
-3. Ghi và checkpoint dữ liệu vào `databases.db`.
-4. Commit rồi push file SQLite về repository nếu dữ liệu thay đổi.
-5. Vercel tự redeploy commit mới và đọc snapshot `databases.db` ở chế độ chỉ đọc.
+1. Chạy crawler theo lịch.
+2. Upsert kết quả vào `data/results.xml`.
+3. Commit và push XML về GitHub nếu có dữ liệu mới.
+4. Vercel tự deploy commit mới và đọc XML ở chế độ chỉ đọc.
 
-Trong GitHub repository, vào **Settings → Actions → General → Workflow permissions** và chọn **Read and write permissions** để workflow được push `databases.db`.
+Trong GitHub repository, bật quyền push cho workflow tại:
 
-Không cần cấu hình `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `CRON_SECRET` hay database trên Vercel.
+```text
+Settings → Actions → General → Workflow permissions
+→ Read and write permissions → Save
+```
 
-Chế độ development dùng `.next-dev`, production dùng `.next` để hai cache không ghi đè nhau.
+Không cần database hoặc biến môi trường trên Vercel.
 
 ## REST API
 
 ```text
 GET /api
-GET /api/results?limit=20&offset=0
 GET /api/results/xsmb?limit=20&offset=0
 GET /api/results/xsmn?limit=20&offset=0
 GET /api/results/mega645?limit=20&offset=0
@@ -52,8 +54,4 @@ GET /api/results/power655?limit=20&offset=0
 GET /api/results/keno?limit=20&offset=0
 ```
 
-API trả JSON, bật CORS `*` và giới hạn tối đa 100 bản ghi cho mỗi nguồn trong một request.
-
-## Lưu ý
-
-GitHub không phải database server. Mỗi lần crawler có dữ liệu mới sẽ tạo commit mới; Keno chạy mỗi 6 phút có thể tạo nhiều commit và Vercel deployment. Đây là đánh đổi khi chọn lưu SQLite trực tiếp trong GitHub thay vì dùng database bên ngoài.
+Lưu ý: mỗi lần XML thay đổi sẽ tạo một commit GitHub và có thể kích hoạt một deployment Vercel mới.
