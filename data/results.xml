@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lotteryData>
-  <updated_at>2026-08-15 20:24:28</updated_at>
+  <updated_at>2026-08-15 20:30:00</updated_at>
   <xsmb>
     <item>
       <id>10</id>
@@ -222,6 +222,18 @@
     </item>
   </power655>
   <keno>
+    <item>
+      <id>152</id>
+      <draw_date>2026-08-15</draw_date>
+      <draw_time></draw_time>
+      <draw_no>0292155</draw_no>
+      <numbers>02,05,06,13,16,20,23,24,26,27,30,42,45,47,50,55,59,72,74,79</numbers>
+      <so_chan>11</so_chan>
+      <so_le>9</so_le>
+      <so_lon>9</so_lon>
+      <so_nho>11</so_nho>
+      <created_vn>2026-08-15 20:30:00</created_vn>
+    </item>
     <item>
       <id>151</id>
       <draw_date>2026-08-15</draw_date>
