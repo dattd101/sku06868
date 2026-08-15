@@ -37,6 +37,8 @@
   ],
   "exclude": [
     "node_modules",
-    "debugs"
+    "debugs",
+    "lib/database.ts",
+    "scripts/export-xml.ts"
   ]
 }

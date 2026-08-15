@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lotteryData>
-  <updated_at>2026-08-15 20:15:14</updated_at>
+  <updated_at>2026-08-15 20:24:28</updated_at>
   <xsmb>
+    <item>
+      <id>10</id>
+      <ngay_quay>15/08/2026</ngay_quay>
+      <tinh>Xổ Số Nam Định</tinh>
+      <giai_db>80278</giai_db>
+      <giai_nhat>97028</giai_nhat>
+      <giai_nhi>57724, 00834</giai_nhi>
+      <giai_ba>71946, 84077, 83718, 45800, 97287, 77363</giai_ba>
+      <giai_tu>6233, 3434, 5381, 6127</giai_tu>
+      <giai_nam>4027, 2547, 1283, 5647, 6635, 0761</giai_nam>
+      <giai_sau>790, 558, 928</giai_sau>
+      <giai_bay>33, 66, 52, 04</giai_bay>
+      <created_vn>2026-08-15 20:24:24</created_vn>
+    </item>
     <item>
       <id>9</id>
       <ngay_quay>13/08/2026</ngay_quay>
@@ -32,6 +46,51 @@
     </item>
   </xsmb>
   <xsmn>
+    <item>
+      <id>27</id>
+      <ngay_quay>15/08/2026</ngay_quay>
+      <tinh>Trà Vinh</tinh>
+      <giai_db>521473</giai_db>
+      <giai_nhat>96396</giai_nhat>
+      <giai_nhi>25383</giai_nhi>
+      <giai_ba>99947, 90074</giai_ba>
+      <giai_tu>87376, 79689, 00317, 37708, 95083, 90477, 58479</giai_tu>
+      <giai_nam>8693</giai_nam>
+      <giai_sau>6611, 0852, 9952</giai_sau>
+      <giai_bay>085</giai_bay>
+      <giai_tam>97</giai_tam>
+      <created_vn>2026-08-15 20:24:25</created_vn>
+    </item>
+    <item>
+      <id>26</id>
+      <ngay_quay>15/08/2026</ngay_quay>
+      <tinh>Bình Dương</tinh>
+      <giai_db>696215</giai_db>
+      <giai_nhat>06360</giai_nhat>
+      <giai_nhi>39274</giai_nhi>
+      <giai_ba>28581, 22304</giai_ba>
+      <giai_tu>17777, 84639, 25642, 53531, 60983, 93002, 23758</giai_tu>
+      <giai_nam>3261</giai_nam>
+      <giai_sau>8562, 1302, 5174</giai_sau>
+      <giai_bay>785</giai_bay>
+      <giai_tam>33</giai_tam>
+      <created_vn>2026-08-15 20:24:25</created_vn>
+    </item>
+    <item>
+      <id>25</id>
+      <ngay_quay>15/08/2026</ngay_quay>
+      <tinh>Vĩnh Long</tinh>
+      <giai_db>597367</giai_db>
+      <giai_nhat>62825</giai_nhat>
+      <giai_nhi>63655</giai_nhi>
+      <giai_ba>99650, 00703</giai_ba>
+      <giai_tu>30335, 71841, 49464, 38323, 27146, 43150, 65450</giai_tu>
+      <giai_nam>7785</giai_nam>
+      <giai_sau>7993, 1706, 4834</giai_sau>
+      <giai_bay>562</giai_bay>
+      <giai_tam>72</giai_tam>
+      <created_vn>2026-08-15 20:24:25</created_vn>
+    </item>
     <item>
       <id>24</id>
       <ngay_quay>13/08/2026</ngay_quay>
@@ -125,6 +184,13 @@
   </xsmn>
   <mega645>
     <item>
+      <id>2</id>
+      <thoi_gian>14/08/2026</thoi_gian>
+      <so_ky_quay>1549</so_ky_quay>
+      <so_trung>07, 09, 13, 31, 35, 44</so_trung>
+      <created_vn>2026-08-15 20:24:26</created_vn>
+    </item>
+    <item>
       <id>1</id>
       <thoi_gian>12/08/2026</thoi_gian>
       <so_ky_quay>1548</so_ky_quay>
@@ -133,6 +199,13 @@
     </item>
   </mega645>
   <power655>
+    <item>
+      <id>9</id>
+      <thoi_gian>15/08/2026</thoi_gian>
+      <so_ky_quay>1385</so_ky_quay>
+      <so_trung>16, 20, 25, 27, 30, 50, 02</so_trung>
+      <created_vn>2026-08-15 20:24:27</created_vn>
+    </item>
     <item>
       <id>8</id>
       <thoi_gian>13/08/2026</thoi_gian>
@@ -149,6 +222,18 @@
     </item>
   </power655>
   <keno>
+    <item>
+      <id>151</id>
+      <draw_date>2026-08-15</draw_date>
+      <draw_time></draw_time>
+      <draw_no>0292154</draw_no>
+      <numbers>10,19,22,24,31,33,38,39,43,47,54,55,59,61,66,69,73,75,77,80</numbers>
+      <so_chan>7</so_chan>
+      <so_le>13</so_le>
+      <so_lon>12</so_lon>
+      <so_nho>8</so_nho>
+      <created_vn>2026-08-15 20:24:28</created_vn>
+    </item>
     <item>
       <id>150</id>
       <draw_date>2026-08-15</draw_date>
