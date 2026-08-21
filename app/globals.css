@@ -166,11 +166,6 @@ button:focus-visible {
   overflow-wrap: anywhere;
 }
 
-.row-count {
-  color: #667085;
-  font-size: 13px;
-  white-space: nowrap;
-}
 
 .data-table-wrap {
   position: relative;
@@ -323,10 +318,6 @@ button:focus-visible {
     font-size: 18px;
   }
 
-  .row-count {
-    white-space: normal;
-    line-height: 1.4;
-  }
 
   .data-table-wrap {
     margin: 0 12px 18px;
@@ -437,4 +428,103 @@ button:focus-visible {
 
 .current-time {
   font-variant-numeric: tabular-nums;
+}
+
+/* Trang 404 động khi Web API mất kết nối. */
+.not-found-page {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 24px;
+  background: #f7f9fc;
+}
+
+.not-found-card {
+  width: min(560px, 100%);
+  padding: 48px 32px;
+  border: 1px solid #e3e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 34px rgba(29, 46, 78, 0.08);
+  text-align: center;
+}
+
+.not-found-code {
+  margin-bottom: 12px;
+  color: #2563eb;
+  font-size: clamp(72px, 18vw, 124px);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+}
+
+.not-found-card h1 {
+  margin: 0;
+  color: #172033;
+  font-size: 26px;
+  line-height: 1.25;
+}
+
+.not-found-card p {
+  margin: 12px auto 0;
+  max-width: 440px;
+  color: #667085;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.not-found-card .not-found-retry {
+  margin-top: 6px;
+  color: #475467;
+  font-size: 13px;
+}
+
+.retry-button {
+  min-height: 44px;
+  margin-top: 24px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.retry-button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.retry-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.not-found-detail {
+  display: block;
+  max-width: 460px;
+  margin: 18px auto 0;
+  color: #98a2b3;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  .not-found-page {
+    padding: 16px;
+  }
+
+  .not-found-card {
+    padding: 40px 20px;
+    border-radius: 14px;
+  }
+
+  .not-found-card h1 {
+    font-size: 22px;
+  }
+
+  .retry-button {
+    width: 100%;
+  }
 }

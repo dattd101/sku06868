@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type ColumnInfo = {
   name: string;
@@ -118,11 +118,18 @@ export default function Home() {
   const [data, setData] = useState<ApiData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [apiUnavailable, setApiUnavailable] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
+  const requestInFlight = useRef(false);
 
   const loadData = useCallback(async (table?: string) => {
+    if (requestInFlight.current) return;
+
+    requestInFlight.current = true;
     setLoading(true);
-    setError('');
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
 
     try {
       const params = new URLSearchParams({
@@ -134,20 +141,40 @@ export default function Home() {
 
       const response = await fetch(`/api/data?${params.toString()}`, {
         cache: 'no-store',
+        signal: controller.signal,
       });
-      const body = (await response.json()) as ApiData;
 
-      if (!response.ok || !body.ok) {
+      let body: ApiData | null = null;
+
+      try {
+        body = (await response.json()) as ApiData;
+      } catch {
+        // Phản hồi không phải JSON cũng được xem là Web API đang lỗi.
+      }
+
+      if (!response.ok || !body?.ok) {
         throw new Error(
-          [body.error, body.detail].filter(Boolean).join(' — ') ||
-            'Không đọc được database.',
+          [body?.error, body?.detail].filter(Boolean).join(' — ') ||
+            `Web API trả về lỗi ${response.status}.`,
         );
       }
 
       setData(body);
+      setError('');
+      setApiUnavailable(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Không đọc được database.');
+      const message =
+        err instanceof DOMException && err.name === 'AbortError'
+          ? 'Web API không phản hồi trong thời gian cho phép.'
+          : err instanceof Error
+            ? err.message
+            : 'Không thể kết nối Web API.';
+
+      setError(message);
+      setApiUnavailable(true);
     } finally {
+      window.clearTimeout(timeout);
+      requestInFlight.current = false;
       setLoading(false);
     }
   }, []);
@@ -155,6 +182,22 @@ export default function Home() {
   useEffect(() => {
     void loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    if (!apiUnavailable) return;
+
+    const retryConnection = () => {
+      void loadData(data?.selectedTable ?? undefined);
+    };
+
+    const retryTimer = window.setInterval(retryConnection, 5000);
+    window.addEventListener('online', retryConnection);
+
+    return () => {
+      window.clearInterval(retryTimer);
+      window.removeEventListener('online', retryConnection);
+    };
+  }, [apiUnavailable, data?.selectedTable, loadData]);
 
   useEffect(() => {
     const updateTime = () => setCurrentTime(formatCurrentTime(new Date()));
@@ -170,6 +213,34 @@ export default function Home() {
       ),
     [data?.columns],
   );
+
+  if (apiUnavailable) {
+    return (
+      <main className="not-found-page">
+        <section className="not-found-card" aria-live="polite">
+          <div className="not-found-code">404</div>
+          <h1>Không thể kết nối dữ liệu</h1>
+          <p>Web API hiện không phản hồi hoặc đang tạm thời gián đoạn.</p>
+          <p className="not-found-retry">
+            {loading
+              ? 'Đang thử kết nối lại…'
+              : 'Hệ thống sẽ tự thử kết nối lại sau mỗi 5 giây.'}
+          </p>
+
+          <button
+            className="retry-button"
+            type="button"
+            onClick={() => void loadData(data?.selectedTable ?? undefined)}
+            disabled={loading}
+          >
+            {loading ? 'Đang kết nối…' : 'Thử lại ngay'}
+          </button>
+
+          {error && <span className="not-found-detail">{error}</span>}
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="app-shell">
@@ -222,7 +293,6 @@ export default function Home() {
                 <span className="table-label">Kết quả đang xem</span>
                 <h2>{data.selectedTable ? getTableLabel(data.selectedTable) : ''}</h2>
               </div>
-              
             </div>
 
             <div
