@@ -1,17 +1,15 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Kết quả xổ số",
-  description: "Next.js 15 crawler lưu dữ liệu XML trên GitHub",
+  title: 'SQLite Bridge',
+  description: 'Next.js 15 bridge to WordPress SQLite API',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="vi">
-      <body suppressHydrationWarning>
-        <main className="container">{children}</main>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

@@ -1,57 +1,61 @@
-# Next.js 15 crawler + XML trên GitHub
+# sku06868 Next.js 15 SQLite Bridge
 
-Ứng dụng crawl XSMB, XSMN, Mega 6/45, Power 6/55 và Keno.
+Project tối giản cho kiến trúc trong file đính kèm:
 
-- `/home`: hiển thị dữ liệu từ `data/results.xml`.
-- `/admin`: theo dõi lịch và thời gian dữ liệu được cập nhật.
-- `/api`: REST API public, chỉ đọc.
-- GitHub lưu dữ liệu trong file `data/results.xml`.
-- Vercel chỉ đọc XML để render giao diện và API.
+Browser -> `https://sku06868.vercel.app/api/db` -> HMAC -> WordPress REST API -> `crawl_lucky.db`
 
-## Chạy local
+## 1. Yêu cầu
+
+- Next.js 15.5.23
+- Node.js 24.x trên Vercel
+- Local Node.js >= 20.9
+
+## 2. Chạy local
 
 ```bash
 npm install
+cp .env.example .env.local
+```
+
+Sửa `.env.local`:
+
+```env
+SQLITE_HMAC_SECRET=secret_cua_ban
+WORDPRESS_DB_ENDPOINT=https://YOUR-WP-DOMAIN/wp-json/local-sqlite/v1/db
+```
+
+Sau đó:
+
+```bash
 npm run dev
 ```
 
-Chạy crawler thủ công:
+Mở http://localhost:3000.
+
+## 3. Push GitHub
 
 ```bash
-npm run crawl -- xsmb
-npm run crawl -- xsmn
-npm run crawl -- mega645
-npm run crawl -- power655
-npm run crawl -- keno
+git init
+git add .
+git commit -m "Next.js 15 SQLite bridge"
+git branch -M main
+git remote add origin https://github.com/YOUR-USER/YOUR-REPO.git
+git push -u origin main
 ```
 
-## GitHub Actions và Vercel
+## 4. Vercel
 
-Workflow `.github/workflows/crawler.yml` sẽ:
+Import repo GitHub vào Vercel, rồi thêm Environment Variables:
 
-1. Chạy crawler theo lịch.
-2. Upsert kết quả vào `data/results.xml`.
-3. Commit và push XML về GitHub nếu có dữ liệu mới.
-4. Vercel tự deploy commit mới và đọc XML ở chế độ chỉ đọc.
+- `SQLITE_HMAC_SECRET`
+- `WORDPRESS_DB_ENDPOINT`
 
-Trong GitHub repository, bật quyền push cho workflow tại:
+Redeploy project. Domain production dùng trong HMAC là:
 
-```text
-Settings → Actions → General → Workflow permissions
-→ Read and write permissions → Save
-```
+`https://sku06868.vercel.app`
 
-Không cần database hoặc biến môi trường trên Vercel.
+## Lưu ý bảo mật
 
-## REST API
+Không commit `.env.local` hoặc secret lên GitHub.
 
-```text
-GET /api
-GET /api/results/xsmb?limit=20&offset=0
-GET /api/results/xsmn?limit=20&offset=0
-GET /api/results/mega645?limit=20&offset=0
-GET /api/results/power655?limit=20&offset=0
-GET /api/results/keno?limit=20&offset=0
-```
-
-Lưu ý: mỗi lần XML thay đổi sẽ tạo một commit GitHub và có thể kích hoạt một deployment Vercel mới.
+HMAC xác thực Vercel với WordPress. Route `/api/db` của Vercel vẫn là URL public nếu bạn không thêm đăng nhập/auth riêng. Nếu database có dữ liệu nhạy cảm, cần bảo vệ route này thêm.
