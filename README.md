@@ -1,61 +1,67 @@
-# sku06868 Next.js 15 SQLite Bridge
+# sku06868 — Next.js 15 + WordPress SQLite reader
 
-Project tối giản cho kiến trúc trong file đính kèm:
+Bản này tự đọc dữ liệu ngay khi mở trang.
 
-Browser -> `https://sku06868.vercel.app/api/db` -> HMAC -> WordPress REST API -> `crawl_lucky.db`
+Luồng:
 
-## 1. Yêu cầu
+```text
+Browser -> /api/data -> Next.js/Vercel -> HMAC -> WordPress -> crawl_lucky.db
+                                      -> node:sqlite -> JSON -> bảng dữ liệu
+```
 
-- Next.js 15.5.23
-- Node.js 24.x trên Vercel
-- Local Node.js >= 20.9
+## Vì sao bản này không còn lỗi `sql.js/dist/sql-asm.js`
 
-## 2. Chạy local
+Bản cũ dùng package `sql.js`. Bản này bỏ hoàn toàn `sql.js` và dùng module SQLite tích hợp sẵn trong Node.js (`node:sqlite`). File DB tải từ WordPress được ghi tạm vào thư mục `/tmp`, mở ở chế độ read-only, đọc xong rồi xóa ngay.
+
+Không cần WASM và không cần cài package SQLite riêng.
+
+## Yêu cầu
+
+- Node.js 24.x cho local/production để khớp Vercel.
+- Next.js 15.
+
+## Cài đặt sạch
 
 ```bash
+rm -rf node_modules .next package-lock.json
 npm install
 cp .env.example .env.local
-```
-
-Sửa `.env.local`:
-
-```env
-SQLITE_HMAC_SECRET=secret_cua_ban
-WORDPRESS_DB_ENDPOINT=https://YOUR-WP-DOMAIN/wp-json/local-sqlite/v1/db
-```
-
-Sau đó:
-
-```bash
 npm run dev
 ```
 
-Mở http://localhost:3000.
+Nếu đã có `.env.local`, không cần ghi đè file đó.
 
-## 3. Push GitHub
+## Environment Variables
 
-```bash
-git init
-git add .
-git commit -m "Next.js 15 SQLite bridge"
-git branch -M main
-git remote add origin https://github.com/YOUR-USER/YOUR-REPO.git
-git push -u origin main
+```env
+SQLITE_HMAC_SECRET=YOUR_SECRET
+WORDPRESS_DB_ENDPOINT=https://YOUR-WORDPRESS-DOMAIN/wp-json/local-sqlite/v1/db
 ```
 
-## 4. Vercel
+Trên Vercel thêm hai biến trên trong Project -> Settings -> Environment Variables rồi Redeploy.
 
-Import repo GitHub vào Vercel, rồi thêm Environment Variables:
+## API
 
-- `SQLITE_HMAC_SECRET`
-- `WORDPRESS_DB_ENDPOINT`
+Tự chọn table đầu tiên:
 
-Redeploy project. Domain production dùng trong HMAC là:
+```text
+GET /api/data
+```
 
-`https://sku06868.vercel.app`
+Chọn table và phân trang:
 
-## Lưu ý bảo mật
+```text
+GET /api/data?table=products&limit=50&offset=0
+```
 
-Không commit `.env.local` hoặc secret lên GitHub.
+Tải file gốc:
 
-HMAC xác thực Vercel với WordPress. Route `/api/db` của Vercel vẫn là URL public nếu bạn không thêm đăng nhập/auth riêng. Nếu database có dữ liệu nhạy cảm, cần bảo vệ route này thêm.
+```text
+GET /api/db
+```
+
+## Production domain
+
+```text
+https://sku06868.vercel.app/
+```
