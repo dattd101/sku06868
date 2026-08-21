@@ -48,7 +48,7 @@ function clampInteger(raw: string | null, fallback: number, min: number, max: nu
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const requestedTable = url.searchParams.get('table');
-  const limit = clampInteger(url.searchParams.get('limit'), 50, 1, MAX_LIMIT);
+  const limit = clampInteger(url.searchParams.get('limit'), 10, 1, MAX_LIMIT);
   const offset = clampInteger(url.searchParams.get('offset'), 0, 0, Number.MAX_SAFE_INTEGER);
 
   let tempDir = '';
