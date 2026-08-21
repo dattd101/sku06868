@@ -125,8 +125,19 @@ export async function GET(request: Request) {
         ? Number(totalValue)
         : Number(totalValue ?? 0);
 
+    // Luôn ưu tiên 10 bản ghi mới nhất: cột `id` lớn nhất nằm trên cùng.
+    // Nếu bảng không có `id`, dùng primary key làm phương án dự phòng.
+    const idColumn = columns.find(
+      (column) => column.name.toLocaleLowerCase() === 'id',
+    )?.name;
+    const primaryKeyColumn = columns.find((column) => column.primaryKey)?.name;
+    const newestColumn = idColumn ?? primaryKeyColumn;
+    const orderBy = newestColumn
+      ? ` ORDER BY ${quoteIdentifier(newestColumn)} DESC`
+      : ' ORDER BY rowid DESC';
+
     const rawRows = db
-      .prepare(`SELECT * FROM ${tableSql} LIMIT ? OFFSET ?`)
+      .prepare(`SELECT * FROM ${tableSql}${orderBy} LIMIT ? OFFSET ?`)
       .all(limit, offset) as SQLiteRow[];
 
     const rows = rawRows.map(normalizeRow);
