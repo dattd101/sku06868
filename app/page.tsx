@@ -222,9 +222,7 @@ export default function Home() {
                 <span className="table-label">Kết quả đang xem</span>
                 <h2>{data.selectedTable ? getTableLabel(data.selectedTable) : ''}</h2>
               </div>
-              <span className="row-count">
-                {data.rows.length} kỳ mới nhất · {data.totalRows.toLocaleString('vi-VN')} bản ghi
-              </span>
+              
             </div>
 
             <div
